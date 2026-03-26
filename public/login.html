@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up - Meetdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    colors: { 
+                        coral: '#E8614A', 
+                        amber: '#F59E0B', 
+                        bgWarm: '#FAFAF8', 
+                        slateDark: '#2D2F2E', 
+                        slateMuted: '#5A5C5B' 
+                    }, 
+                    fontFamily: { 
+                        sans: ['DM Sans', 'sans-serif'], 
+                        display: ['Plus Jakarta Sans', 'sans-serif'] 
+                    }, 
+                    borderRadius: { '2xl': '16px' } 
+                } 
+            } 
+        }
+    </script>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .cl-card { box-shadow: none !important; padding: 0 !important; background: transparent !important; border: none !important; }
+        .cl-header { display: none !important; }
+        .cl-footer { display: none !important; }
+        .cl-socialButtonsBlockButton { border-radius: 9999px !important; border: 1px solid #acadac !important; padding: 12px 24px !important; }
+        .cl-formButtonPrimary { border-radius: 9999px !important; background: linear-gradient(135deg, rgb(167, 50, 32) 0%, rgb(255, 119, 95) 100%) !important; padding: 12px 24px !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 700 !important; font-size: 16px !important; }
+        .cl-formFieldInput { background: #f0f1ef !important; border-radius: 16px !important; border: 1px solid rgba(172,173,172,0.5) !important; padding: 12px 16px !important; font-size: 16px !important; }
+        .cl-dividerLine { background: rgba(172,173,172,0.3) !important; }
+        .cl-dividerText { color: #767776 !important; font-family: 'Plus Jakarta Sans', sans-serif !important; text-transform: uppercase !important; letter-spacing: 1px !important; font-size: 10px !important; }
+        .cl-formFieldLabel { color: #5a5c5b !important; font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 700 !important; font-size: 12px !important; text-transform: uppercase !important; letter-spacing: 0.6px !important; }
+    </style>
+</head>
+<body class="bg-[#f6f6f4] min-h-screen text-slateDark font-sans antialiased flex items-center justify-center p-6 relative overflow-hidden">
+    
+    <!-- Decorative Ambient Elements -->
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 flex items-center justify-center">
+        <div class="relative w-[880px] h-full">
+            <div class="absolute bg-[rgba(255,200,133,0.3)] blur-[40px] rounded-full w-[350px] h-[350px] top-10 -left-10"></div>
+            <div class="absolute bg-[rgba(255,119,95,0.2)] blur-[40px] rounded-full w-[350px] h-[350px] bottom-10 -right-10"></div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="relative z-10 flex w-full max-w-[880px] justify-center items-stretch gap-8 min-h-[640px]">
+        
+        <!-- Auth Card -->
+        <div class="bg-white border w-full max-w-[440px] border-[rgba(172,173,172,0.15)] shadow-[0px_20px_40px_0px_rgba(45,47,46,0.06)] rounded-[24px] p-10 flex flex-col relative shrinks-0">
+            <!-- Brand Header -->
+            <div class="flex flex-col items-center text-center mb-8">
+                <a href="/" class="inline-block mb-4">
+                    <div class="bg-coral text-white p-3 rounded-2xl inline-flex items-center justify-center mb-2 shadow-sm">
+                        <i class="ph ph-users-three text-2xl"></i>
+                    </div>
+                    <h1 class="font-display font-extrabold text-[30px] tracking-tight text-slateDark leading-none mb-2">Meetdown</h1>
+                </a>
+                <p class="font-display font-medium text-[14px] text-slateMuted tracking-tight">Connect through shared interests.</p>
+            </div>
+            
+            <!-- Clerk Auth Mount Point -->
+            <div id="clerk-mount-point" class="w-full flex-grow flex flex-col justify-center">
+                <!-- Fallback loading state -->
+                <div class="text-center text-slateMuted animate-pulse py-8">Loading authentication...</div>
+            </div>
+
+            <!-- Footer links -->
+            <div class="mt-8 pt-6 text-center text-[14px] flex justify-center gap-1 border-t border-gray-100">
+                <span class="font-display font-medium text-slateMuted">New here?</span>
+                <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="font-display font-bold text-coral hover:underline focus:outline-none">Sign up</button>
+            </div>
+        </div>
+
+        <!-- Image Hint Panel (Desktop only) -->
+        <div class="hidden md:flex flex-col w-[400px] relative rounded-[24px] overflow-hidden shadow-[0px_20px_40px_0px_rgba(45,47,46,0.06)] border border-white/40">
+            <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Diverse group of friends laughing" class="absolute inset-0 w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div class="relative z-10 mt-auto p-8">
+                <h2 class="font-display font-bold text-[24px] text-white leading-tight">Find your next favorite memory with Meetdown.</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Load Clerk JS -->
+    <script>
+        const CLERK_PUBLISHABLE_KEY = 'pk_test_Zmx1ZW50LWJ1Zy05Ny5jbGVyay5hY2NvdW50cy5kZXYk';
+        const script = document.createElement('script');
+        script.setAttribute('data-clerk-publishable-key', CLERK_PUBLISHABLE_KEY);
+        script.async = true;
+        script.src = `https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js`;
+        script.crossOrigin = 'anonymous';
+
+        let currentMode = 'signIn'; // 'signIn' or 'signUp'
+
+        script.addEventListener('load', async function () {
+            await window.Clerk.load();
+            
+            if (window.Clerk.user) {
+                // If already logged in, redirect to dashboard
+                window.location.href = '/dashboard.html';
+                return;
+            }
+
+            // Check URL query parameters for mode
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('mode') === 'signup') {
+                currentMode = 'signUp';
+            }
+
+            renderAuthComponent();
+            updateToggleButtonText();
+        });
+        document.body.appendChild(script);
+
+        function renderAuthComponent() {
+            const mountPoint = document.getElementById('clerk-mount-point');
+            mountPoint.innerHTML = ''; // Clear previous
+
+            const appearanceOptions = {
+                variables: {
+                    colorPrimary: '#E8614A',
+                    colorText: '#2D2F2E',
+                    fontFamily: '"DM Sans", sans-serif',
+                }
+            };
+
+            if (currentMode === 'signIn') {
+                window.Clerk.mountSignIn(mountPoint, { 
+                    appearance: appearanceOptions,
+                    routing: "virtual"
+                });
+            } else {
+                window.Clerk.mountSignUp(mountPoint, { 
+                    appearance: appearanceOptions,
+                    routing: "virtual"
+                });
+            }
+        }
+
+        function toggleAuthMode() {
+            currentMode = currentMode === 'signIn' ? 'signUp' : 'signIn';
+            // Update URL without reloading
+            const url = new URL(window.location);
+            url.searchParams.set('mode', currentMode === 'signUp' ? 'signup' : 'login');
+            window.history.pushState({}, '', url);
+
+            renderAuthComponent();
+            updateToggleButtonText();
+        }
+
+        function updateToggleButtonText() {
+            const btn = document.getElementById('auth-toggle-btn');
+            const span = btn.previousElementSibling;
+            if (currentMode === 'signIn') {
+                span.innerText = 'New here?';
+                btn.innerText = 'Sign up';
+            } else {
+                span.innerText = 'Already have an account?';
+                btn.innerText = 'Sign in';
+            }
+        }
+    </script>
+</body>
+</html>

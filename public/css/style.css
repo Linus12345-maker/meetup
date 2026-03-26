@@ -1,0 +1,16 @@
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+/* Base custom styles to ensure Leaflet maps render correctly later */
+#map { height: 100%; border-radius: 16px; min-height: 250px; z-index: 10; }
+
+.leaflet-container {
+    font-family: inherit !important;
+}
+
+[x-cloak] { display: none !important; }

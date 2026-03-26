@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Meetup - Meetdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { coral: '#E8614A', amber: '#F59E0B', bgWarm: '#FAFAF8', slateDark: '#1E293B', slateMuted: '#64748B' }, fontFamily: { sans: ['DM Sans', 'sans-serif'], display: ['Plus Jakarta Sans', 'sans-serif'] }, borderRadius: { '2xl': '16px' } } } }
+    </script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-[#F6F6F4] text-[#2D2F2E] font-['DM_Sans'] min-h-screen flex flex-col antialiased">
+    <nav class="sticky top-0 z-50 bg-[#F6F6F4]/80 backdrop-blur-md border-b border-[#EBEBEA] px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center gap-2 font-['Plus_Jakarta_Sans'] font-bold text-xl tracking-tight text-[#E8614A]">
+                <div class="bg-[#E8614A] text-white p-2 rounded-xl"><i class="ph ph-users-three"></i></div> Meetdown
+            </a>
+            <div id="auth-container" class="flex items-center gap-4"></div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-[896px] mx-auto w-full px-6 pt-[96px] pb-[128px]">
+        <div class="mb-10">
+            <h1 class="font-['Plus_Jakarta_Sans'] font-bold text-[36px] tracking-[-0.9px] text-[#2D2F2E] mb-2 leading-[40px]">Create a Meetup</h1>
+            <p class="font-['Plus_Jakarta_Sans'] font-medium text-[#5A5C5B] text-[16px] leading-[24px]">Bring people together for an unforgettable experience.</p>
+        </div>
+        
+        <form id="createForm" class="flex flex-col gap-[32px] w-full">
+            <!-- Image Upload -->
+            <div class="flex flex-col gap-[16px] w-full group">
+                <label class="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#2D2F2E]">Event Cover</label>
+                <div id="uploadWidget" class="bg-[#F0F1EF] border-2 border-[#ACADAC] border-dashed flex flex-col items-center justify-center px-[2px] py-[63px] rounded-[24px] w-full cursor-pointer hover:border-[#E8614A] transition-colors">
+                    <div class="bg-white flex items-center justify-center rounded-full shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] size-[48px] mb-3 group-hover:scale-105 transition-transform">
+                        <i class="ph ph-image text-xl text-[#2D2F2E]"></i>
+                    </div>
+                    <p class="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[20px] text-[#2D2F2E]">Upload cover image</p>
+                    <p class="font-normal text-[12px] leading-[16px] text-[#5A5C5B]">Recommended 1200x400 (Max 5MB)</p>
+                </div>
+                <input type="hidden" id="coverImageUrl" name="coverImageUrl">
+                <img id="imagePreview" class="hidden w-full h-[320px] object-cover rounded-[24px] border border-[#EBEBEA]" />
+            </div>
+
+            <!-- Form Body -->
+            <div class="bg-white gap-[32px] grid grid-cols-1 md:grid-cols-2 p-[32px] rounded-[24px] shadow-[0px_20px_40px_0px_rgba(45,47,46,0.06)] w-full">
+                
+                <!-- Event Name -->
+                <div class="col-span-1 md:col-span-2 flex flex-col gap-[8px]">
+                    <label class="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#2D2F2E]">Event Name</label>
+                    <input type="text" name="title" placeholder="e.g. Weekend Board Game Night" required class="bg-[#F0F1EF] h-[56px] rounded-[24px] px-[16px] font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#2D2F2E] placeholder-[#ACADAC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E8614A]/50 transition-all w-full leading-normal">
+                </div>
+
+                <!-- Category -->
+                <div class="flex flex-col gap-[8px] relative">
+                    <label class="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#2D2F2E]">Category</label>
+                    <div class="relative w-full">
+                        <select name="categorySlug" required class="appearance-none bg-[#F0F1EF] h-[56px] rounded-[24px] pl-[16px] pr-[48px] font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#2D2F2E] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E8614A]/50 transition-all w-full cursor-pointer leading-[24px]">
+                            <option value="" disabled selected class="text-[#ACADAC]">Select a category</option>
+                            <option value="tech">💻 Tech</option>
+                            <option value="coffee">☕ Coffee Chat</option>
+                            <option value="active">👟 Active</option>
+                            <option value="design">🎨 Design</option>
+                            <option value="other">✨ Other</option>
+                        </select>
+                        <i class="ph-bold ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-[#2D2F2E] pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="flex flex-col gap-[8px] relative">
+                    <label class="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#2D2F2E]">Location</label>
+                    <div class="relative w-full">
+                        <i class="ph ph-map-pin absolute left-4 top-1/2 -translate-y-1/2 text-[#ACADAC] text-xl"></i>
+                        <input type="text" name="locationName" placeholder="Search address or venue" required class="bg-[#F0F1EF] h-[56px] rounded-[24px] pl-[48px] pr-[16px] font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#2D2F2E] placeholder-[#ACADAC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E8614A]/50 transition-all w-full leading-normal">
+                    </div>
+                </div>
+
+                <!-- Date & Time -->
+                <div class="flex flex-col gap-[8px] relative">
+                    <label class="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#2D2F2E]">Date & Time</label>
+                    <div class="relative w-full">
+                        <input type="datetime-local" name="dateTime" required class="bg-[#F0F1EF] h-[56px] rounded-[24px] px-[16px] font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#2D2F2E] placeholder-[#ACADAC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E8614A]/50 transition-all w-full select-none cursor-pointer leading-[24px]">
+                    </div>
+                </div>
+                
+                <!-- Max Attendees -->
+                <div class="flex flex-col gap-[8px]">
+                    <label class="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#2D2F2E]">Max Attendees</label>
+                    <input type="number" name="capacity" min="1" placeholder="e.g. 15" class="bg-[#F0F1EF] h-[56px] rounded-[24px] px-[16px] font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#2D2F2E] placeholder-[#ACADAC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E8614A]/50 transition-all w-full leading-[24px]">
+                </div>
+
+                <!-- Description -->
+                <div class="col-span-1 md:col-span-2 flex flex-col gap-[8px]">
+                    <label class="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#2D2F2E]">Description</label>
+                    <textarea name="description" rows="4" placeholder="What should people expect? Mention any requirements or things to bring." required class="bg-[#F0F1EF] rounded-[24px] p-[16px] pt-[17px] font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#2D2F2E] placeholder-[#ACADAC] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#E8614A]/50 transition-all w-full resize-y min-h-[144px] leading-[24px]"></textarea>
+                </div>
+                
+                <!-- Private Event Toggle -->
+                <div class="col-span-1 md:col-span-2 bg-[#F0F1EF] h-[72px] flex items-center justify-between p-[16px] rounded-[24px]">
+                    <div class="flex flex-col gap-[2px]">
+                        <p class="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#2D2F2E]">Private Event</p>
+                        <p class="font-['Plus_Jakarta_Sans'] font-normal text-[12px] leading-[16px] text-[#5A5C5B]">Invite only basis</p>
+                    </div>
+                    
+                    <!-- Custom Toggle Switch -->
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="isPrivate" class="sr-only peer">
+                        <div class="w-11 h-6 bg-[#ACADAC] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#E8614A]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#ACADAC] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2D2F2E]"></div>
+                    </label>
+                </div>
+                
+                <!-- Hidden Coordinates -->
+                <input type="hidden" name="lat" value="40.7128">
+                <input type="hidden" name="lng" value="-74.0060">
+            </div>
+            
+            <div class="fixed md:static -mx-6 md:mx-0 -mb-[128px] md:mb-0 bottom-0 left-0 right-0 py-6 md:py-0 px-6 md:px-0 bg-white md:bg-transparent border-t border-[#EBEBEA] md:border-t-0 shadow-[0px_-10px_30px_0px_rgba(45,47,46,0.04)] md:shadow-none flex items-center justify-end gap-4 mt-8">
+                <button type="button" onclick="window.history.back()" class="border border-[#A73220] text-[#A73220] px-[33px] py-[13px] rounded-[24px] font-['Plus_Jakarta_Sans'] font-bold text-[16px] hover:bg-[#A73220]/5 transition-colors leading-[24px]">Cancel</button>
+                <button type="submit" id="submitBtn" class="bg-gradient-to-b from-[#E8614A] to-[#FF775F] text-white px-[33px] py-[13px] rounded-[24px] font-['Plus_Jakarta_Sans'] font-bold text-[16px] shadow-[0px_10px_15px_-3px_rgba(255,119,95,0.2),0px_4px_6px_-4px_rgba(255,119,95,0.2)] hover:shadow-md hover:-translate-y-0.5 transition-all leading-[24px]">Publish Meetup</button>
+            </div>
+        </form>
+    </main>
+
+    <!-- Cloudinary Widget -->
+    <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/create.js"></script>
+</body>
+</html>

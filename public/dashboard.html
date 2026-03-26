@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Meetdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { 
+            theme: { 
+                extend: { 
+                    colors: { 
+                        coral: '#E8614A', 
+                        amber: '#F59E0B', 
+                        bgWarm: '#FAFAF8',
+                        slateDark: '#1E293B', 
+                        slateMuted: '#64748B' 
+                    },
+                    fontFamily: { 
+                        sans: ['DM Sans', 'sans-serif'], 
+                        display: ['Plus Jakarta Sans', 'sans-serif'] 
+                    },
+                    borderRadius: { '2xl': '16px' }
+                } 
+            } 
+        }
+    </script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-[#FAFAF8] text-[#2D2F2E] font-['DM_Sans'] min-h-screen flex flex-col antialiased">
+    <nav class="sticky top-0 z-50 bg-[#FAFAF8] border-b border-[#EBEBEA] px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center gap-2 font-['Plus_Jakarta_Sans'] font-bold text-xl tracking-tight text-[#2D2F2E]">
+                <div class="bg-[#E8614A] text-white p-2 rounded-xl"><i class="ph ph-users-three"></i></div> Meetdown
+            </a>
+            <div id="auth-container" class="flex items-center gap-4"></div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full px-6 py-12">
+        <div>
+            <h1 class="font-['Plus_Jakarta_Sans'] font-bold text-4xl mb-4 text-[#2D2F2E]" id="greeting-title">Hello 👋</h1>
+            <p class="text-xl font-medium font-['DM_Sans'] text-[#5A5C5B]">Here is what you have coming up.</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="mt-12 flex flex-col md:flex-row md:items-center justify-between border-b border-[#EBEBEA] pb-4 mb-8 gap-4">
+            <div class="flex items-center gap-8">
+                <button class="flex items-center gap-2 pb-4 -mb-4 border-b-2 border-[#E8614A] transition-colors" id="btn-attending" onclick="switchTab('attending', this)">
+                    <div class="text-xl"><i id="icon-attending" class="ph-fill ph-calendar-check text-[#E8614A]"></i></div>
+                    <span id="text-attending" class="text-lg font-bold font-['DM_Sans'] text-[#E8614A]">RSVPs (0)</span>
+                </button>
+                <button class="flex items-center gap-2 pb-4 -mb-4 border-b-2 border-transparent transition-colors group" id="btn-hosting" onclick="switchTab('hosting', this)">
+                    <div class="text-xl"><i id="icon-hosting" class="ph-fill ph-ticket text-[#5A5C5B] group-hover:text-[#2D2F2E] transition-colors"></i></div>
+                    <span id="text-hosting" class="text-lg font-medium font-['DM_Sans'] text-[#5A5C5B] group-hover:text-[#2D2F2E] transition-colors">Hosting (0)</span>
+                </button>
+            </div>
+            
+            <button class="flex items-center gap-2 bg-[#F3F4ED] px-4 py-2 rounded-lg hover:bg-[#EBEBEA] transition-colors self-start md:self-auto">
+                <i class="ph ph-faders text-lg text-[#2D2F2E]"></i>
+                <span class="text-sm font-medium font-['DM_Sans'] text-[#2D2F2E]">Filter</span>
+            </button>
+        </div>
+
+        <div id="attending-tab" class="block">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="attending-grid">
+                <!-- Loaded by JS -->
+                 <div class="text-[#5A5C5B] col-span-full py-10 animate-pulse">Loading structured data...</div>
+            </div>
+        </div>
+        
+        <div id="hosting-tab" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="hosting-grid">
+                <!-- Loaded by JS -->
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
