@@ -147,8 +147,8 @@ function renderGrid(containerId, events, type) {
                     
                     ${type === 'hosting' ? `
                         <div class="flex gap-2 mt-1">
-                            <a href="/event.html?id=${event.id}" class="flex-1 bg-filterBg text-textDark text-center py-2 rounded-xl text-sm font-bold hover:bg-borderLight transition-colors">Details</a>
-                            <button onclick="alert('Editing functionality coming soon!')" class="flex-1 bg-coral/10 text-coral py-2 rounded-xl text-sm font-bold hover:bg-coral/20 transition-colors">Edit</button>
+                            <a href="/event.html?id=${event.id}" class="flex-1 bg-filterBg text-textDark text-center py-2 rounded-xl text-sm font-bold hover:bg-borderLight transition-colors flex items-center justify-center">Details</a>
+                            <a href="/edit.html?id=${event.id}" class="flex-1 bg-coral/10 text-coral py-2 rounded-xl text-sm font-bold hover:bg-coral/20 transition-colors flex items-center justify-center">Edit</a>
                         </div>
                     ` : ''}
                 </div>

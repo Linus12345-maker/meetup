@@ -122,14 +122,6 @@ function renderEvent(event, container) {
                     `).join('') || ''}
                 </div>
             </div>
-            
-            <!-- Location Map -->
-            <div class="mb-6">
-                <h2 class="text-[#2d2f2e] text-[20px] font-bold mb-4">Location</h2>
-                <div id="map" class="w-full h-[200px] rounded-[24px] shadow-sm z-10 overflow-hidden border border-[#f0f1ef] bg-gray-50 flex items-center justify-center text-slateMuted">
-                   <p class="animate-pulse">Loading map...</p>
-                </div>
-            </div>
         </div>
 
         <!-- Fixed bottom RSVP bar -->
@@ -160,36 +152,6 @@ function renderEvent(event, container) {
 
     const rsvpBtn = document.getElementById('rsvpBtn');
     if (rsvpBtn) rsvpBtn.addEventListener('click', () => toggleRSVP(isAttending));
-
-    // Initialize map
-    if (event.lat && event.lng && window.L) {
-        setTimeout(() => {
-            const mapEl = document.getElementById('map');
-            if (!mapEl) return;
-            mapEl.innerHTML = ''; // clear loading text
-            
-            try {
-                const map = L.map('map', { zoomControl: false, dragging: !L.Browser.mobile, scrollWheelZoom: false }).setView([event.lat, event.lng], 14);
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; CARTO'
-                }).addTo(map);
-                
-                const markerHtmlStyles = `
-                    width: 32px; height: 32px; display: block; left: -16px; top: -32px; position: relative;
-                    border-radius: 32px 32px 0; transform: rotate(45deg); border: 2px solid #FFFFFF;
-                    background-color: #E8614A; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-                `;
-                const icon = L.divIcon({
-                    className: "custom-pin",
-                    html: `<span style="${markerHtmlStyles}" />`
-                });
-                L.marker([event.lat, event.lng], { icon }).addTo(map);
-            } catch (err) {
-                console.error('Map init error:', err);
-                mapEl.innerHTML = '<div class="text-xs text-textMuted p-4 text-center">Map failed to load. Location: ' + event.locationName + '</div>';
-            }
-        }, 300);
-    }
 }
 
 async function toggleRSVP(isCurrentlyAttending) {
@@ -219,7 +181,7 @@ async function toggleRSVP(isCurrentlyAttending) {
 }
 
 function editEvent() {
-    alert('Editing functionality is currently in development. Please come back soon!');
+    window.location.href = `/edit.html?id=${eventId}`;
 }
 
 async function copyInviteLink() {

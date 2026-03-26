@@ -42,18 +42,32 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (event.hostId !== user.id) return jsonResponse(res, 403, { error: 'Forbidden: You are not the host' });
 
       if (req.method === 'DELETE') {
-        // delete rsvps first to avoid constraint errors
-        await db.delete(rsvps).where(eq(rsvps.eventId, id));
-        await db.delete(events).where(eq(events.id, id));
+        const rsvpRes = await db.delete(rsvps).where(eq(rsvps.eventId, id));
+        const eventRes = await db.delete(events).where(eq(events.id, id));
         return jsonResponse(res, 200, { success: true });
       }
 
       if (req.method === 'PUT') {
-        const updates = req.body;
-        delete updates.id;
-        delete updates.hostId;
-        delete updates.createdAt;
-        if (updates.dateTime) updates.dateTime = new Date(updates.dateTime);
+        const body = req.body;
+        const updates: any = {};
+        
+        // Explicitly map fields to avoid accidental overwrites of system fields
+        if (body.title !== undefined) updates.title = body.title;
+        if (body.description !== undefined) updates.description = body.description;
+        if (body.categorySlug !== undefined) updates.categorySlug = body.categorySlug;
+        if (body.locationName !== undefined) updates.locationName = body.locationName;
+        if (body.lat !== undefined) updates.lat = body.lat;
+        if (body.lng !== undefined) updates.lng = body.lng;
+        if (body.coverImageUrl !== undefined) updates.coverImageUrl = body.coverImageUrl;
+        if (body.isPrivate !== undefined) updates.isPrivate = body.isPrivate;
+        
+        // Map capacity to maxAttendees
+        if (body.maxAttendees !== undefined) updates.maxAttendees = body.maxAttendees;
+        else if (body.capacity !== undefined) updates.maxAttendees = parseInt(body.capacity);
+
+        if (body.dateTime) {
+          updates.dateTime = new Date(body.dateTime);
+        }
         
         const [updated] = await db.update(events).set(updates).where(eq(events.id, id)).returning();
         return jsonResponse(res, 200, updated);
