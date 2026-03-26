@@ -51,7 +51,7 @@ function renderEvent(event, container) {
             </a>
             
             <!-- Event Cover -->
-            <div class="w-full aspect-square md:h-[382px] rounded-[32px] overflow-hidden mb-6 shadow-sm">
+            <div class="w-full aspect-square md:h-[382px] rounded-[32px] overflow-hidden mb-6 shadow-sm bg-gray-100">
                 <img src="${event.coverImageUrl || 'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800&q=80'}" class="w-full h-full object-cover">
             </div>
             
@@ -106,7 +106,7 @@ function renderEvent(event, container) {
             <div class="mb-[32px]">
                 <h2 class="text-[#2d2f2e] text-[20px] font-bold mb-3">About</h2>
                 <div class="text-[#5a5c5b] text-[16px] leading-[24px]">
-                    ${event.description.replace(/\n/g, '<br/>')}
+                    ${(event.description || '').replace(/\n/g, '<br/>')}
                 </div>
             </div>
 
@@ -124,22 +124,26 @@ function renderEvent(event, container) {
             </div>
             
             <!-- Location Map -->
-            <div class="mb-[80px]">
+            <div class="mb-6">
                 <h2 class="text-[#2d2f2e] text-[20px] font-bold mb-4">Location</h2>
-                <div id="map" class="w-full h-[200px] rounded-[24px] shadow-sm z-10 overflow-hidden border border-[#f0f1ef]"></div>
+                <div id="map" class="w-full h-[200px] rounded-[24px] shadow-sm z-10 overflow-hidden border border-[#f0f1ef] bg-gray-50 flex items-center justify-center text-slateMuted">
+                   <p class="animate-pulse">Loading map...</p>
+                </div>
             </div>
         </div>
 
         <!-- Fixed bottom RSVP bar -->
         <div class="fixed bottom-0 left-0 w-full bg-white border-t border-[#f0f1ef] px-6 py-4 shadow-[0_-4px_20px_0_rgba(45,47,46,0.05)] z-40">
             <div class="max-w-[430px] mx-auto flex gap-4 items-center">
-                <button onclick="copyInviteLink()" class="w-[54px] h-[54px] shrink-0 rounded-full border border-[#f0f1ef] flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm" title="Copy Invite Link">
+                <button id="copyBtn" class="w-[54px] h-[54px] shrink-0 rounded-full border border-[#f0f1ef] flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm" title="Copy Invite Link">
                     <i id="share-icon" class="ph ph-share-network text-[24px] text-[#2d2f2e]"></i>
                 </button>
                 ${isHost ? `
-                    <button onclick="editEvent()" class="flex-1 bg-gray-200 text-[#2d2f2e] font-bold text-[17px] h-[54px] rounded-full shadow-sm hover:bg-gray-300 transition-colors">Edit Event</button>
+                    <button id="editBtn" class="flex-1 bg-white border-2 border-[#f0f1ef] text-[#2d2f2e] font-bold text-[17px] h-[54px] rounded-full shadow-sm hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
+                        <i class="ph ph-pencil-simple"></i> Edit Event
+                    </button>
                 ` : `
-                    <button id="rsvpBtn" onclick="toggleRSVP(${isAttending})" class="flex-1 ${isAttending ? 'bg-white border-2 border-[#f0f1ef] text-[#2d2f2e]' : 'bg-coral text-white'} font-bold text-[17px] h-[54px] rounded-full shadow-sm hover:opacity-90 transition-opacity">
+                    <button id="rsvpBtn" class="flex-1 ${isAttending ? 'bg-white border-2 border-[#f0f1ef] text-[#2d2f2e]' : 'bg-coral text-white'} font-bold text-[17px] h-[54px] rounded-full shadow-sm hover:opacity-90 transition-opacity">
                         ${isAttending ? 'Cancel RSVP' : 'Join Event'}
                     </button>
                 `}
@@ -147,26 +151,44 @@ function renderEvent(event, container) {
         </div>
     `;
 
+    // Add Event Listeners
+    const editBtn = document.getElementById('editBtn');
+    if (editBtn) editBtn.addEventListener('click', () => editEvent());
+    
+    const copyBtn = document.getElementById('copyBtn');
+    if (copyBtn) copyBtn.addEventListener('click', () => copyInviteLink());
+
+    const rsvpBtn = document.getElementById('rsvpBtn');
+    if (rsvpBtn) rsvpBtn.addEventListener('click', () => toggleRSVP(isAttending));
+
     // Initialize map
-    if (event.lat && event.lng) {
+    if (event.lat && event.lng && window.L) {
         setTimeout(() => {
-            const map = L.map('map', { zoomControl: false }).setView([event.lat, event.lng], 15);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap &copy; CARTO'
-            }).addTo(map);
+            const mapEl = document.getElementById('map');
+            if (!mapEl) return;
+            mapEl.innerHTML = ''; // clear loading text
             
-            // Custom marker
-            const markerHtmlStyles = `
-                width: 32px; height: 32px; display: block; left: -16px; top: -32px; position: relative;
-                border-radius: 32px 32px 0; transform: rotate(45deg); border: 2px solid #FFFFFF;
-                background-color: #E8614A; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            `;
-            const icon = L.divIcon({
-                className: "custom-pin",
-                html: `<span style="${markerHtmlStyles}" />`
-            });
-            L.marker([event.lat, event.lng], { icon }).addTo(map);
-        }, 100);
+            try {
+                const map = L.map('map', { zoomControl: false, dragging: !L.Browser.mobile, scrollWheelZoom: false }).setView([event.lat, event.lng], 14);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; CARTO'
+                }).addTo(map);
+                
+                const markerHtmlStyles = `
+                    width: 32px; height: 32px; display: block; left: -16px; top: -32px; position: relative;
+                    border-radius: 32px 32px 0; transform: rotate(45deg); border: 2px solid #FFFFFF;
+                    background-color: #E8614A; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+                `;
+                const icon = L.divIcon({
+                    className: "custom-pin",
+                    html: `<span style="${markerHtmlStyles}" />`
+                });
+                L.marker([event.lat, event.lng], { icon }).addTo(map);
+            } catch (err) {
+                console.error('Map init error:', err);
+                mapEl.innerHTML = '<div class="text-xs text-textMuted p-4 text-center">Map failed to load. Location: ' + event.locationName + '</div>';
+            }
+        }, 300);
     }
 }
 
@@ -197,7 +219,7 @@ async function toggleRSVP(isCurrentlyAttending) {
 }
 
 function editEvent() {
-    alert('Edit functionality would go here.');
+    alert('Editing functionality is currently in development. Please come back soon!');
 }
 
 async function copyInviteLink() {
@@ -212,5 +234,6 @@ async function copyInviteLink() {
         }, 2000);
     } catch (err) {
         console.error('Failed to copy link:', err);
+        alert('Failed to copy link to clipboard.');
     }
 }

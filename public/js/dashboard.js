@@ -114,37 +114,46 @@ function renderGrid(containerId, events, type) {
         const fullDateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + ' · ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
         return `
-        <a href="/event.html?id=${event.id}" class="bg-white rounded-[24px] p-4 flex flex-col gap-5 shadow-[0_20px_40px_0_rgba(45,47,46,0.06)] hover:shadow-md transition-all hover:-translate-y-1 block h-full">
-            <div class="relative h-[200px] w-full rounded-2xl overflow-hidden shrink-0">
+        <div class="bg-white rounded-[24px] p-4 flex flex-col gap-5 shadow-[0_20px_40px_0_rgba(45,47,46,0.06)] hover:shadow-md transition-all hover:-translate-y-1 block h-full group">
+            <a href="/event.html?id=${event.id}" class="relative h-[200px] w-full rounded-2xl overflow-hidden shrink-0 block">
                 <img src="${event.coverImageUrl || 'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=800&q=80'}" class="absolute inset-0 w-full h-full object-cover">
                 <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-md w-12 h-14 rounded-2xl flex flex-col items-center justify-center shadow-lg">
                     <span class="text-[10px] font-bold text-[#E8614A] leading-tight uppercase font-display">${month}</span>
                     <span class="text-xl font-extrabold text-[#2D2F2E] leading-tight font-display">${day}</span>
                 </div>
-            </div>
+            </a>
             <div class="flex flex-col gap-3 flex-1">
-                <div class="flex flex-col gap-1">
+                <a href="/event.html?id=${event.id}" class="flex flex-col gap-1">
                     <div class="text-[#a73220] font-bold text-[12px]">${fullDateStr}</div>
                     <h3 class="text-[#2d2f2e] font-bold text-[18px] leading-[22px] line-clamp-2">${event.title}</h3>
                     <div class="flex items-center gap-1.5 text-[#5a5c5b] text-[13px] font-medium mt-1">
                         <i class="ph ph-map-pin"></i>
                         <span class="truncate">${event.locationName || 'Location Not Set'}</span>
                     </div>
-                </div>
+                </a>
                 
-                <div class="border-t border-[#f0f1ef] pt-4 mt-auto flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 bg-coral/10 rounded-full flex items-center justify-center text-coral text-[10px] font-bold">
-                            ${event.host?.name?.charAt(0) || 'H'}
+                <div class="border-t border-[#f0f1ef] pt-4 mt-auto flex flex-col gap-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 bg-coral/10 rounded-full flex items-center justify-center text-coral text-[10px] font-bold">
+                                ${event.host?.name?.charAt(0) || 'H'}
+                            </div>
+                            <span class="text-[13px] font-medium text-[#5a5c5b]">by ${event.host?.name || 'You'}</span>
                         </div>
-                        <span class="text-[13px] font-medium text-[#5a5c5b]">by ${event.host?.name || 'You'}</span>
+                        <div class="bg-[#d996fe]/10 px-2 py-1 rounded-md">
+                            <span class="text-[#7d40a1] font-bold text-[11px]">${event.rsvps ? event.rsvps.length : 0} going</span>
+                        </div>
                     </div>
-                    <div class="bg-[#d996fe]/10 px-2 py-1 rounded-md">
-                        <span class="text-[#7d40a1] font-bold text-[11px]">${event.rsvps ? event.rsvps.length : 0} going</span>
-                    </div>
+                    
+                    ${type === 'hosting' ? `
+                        <div class="flex gap-2 mt-1">
+                            <a href="/event.html?id=${event.id}" class="flex-1 bg-filterBg text-textDark text-center py-2 rounded-xl text-sm font-bold hover:bg-borderLight transition-colors">Details</a>
+                            <button onclick="alert('Editing functionality coming soon!')" class="flex-1 bg-coral/10 text-coral py-2 rounded-xl text-sm font-bold hover:bg-coral/20 transition-colors">Edit</button>
+                        </div>
+                    ` : ''}
                 </div>
             </div>
-        </a>
+        </div>
         `;
     }).join('');
 }
